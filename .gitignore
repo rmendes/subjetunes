@@ -8,3 +8,4 @@ tools/llama.cpp/
 *.gguf
 *.egg-info/
 dist/
+0001-Add-criteria-model-registry-and-hardware-settings-fi.patch
