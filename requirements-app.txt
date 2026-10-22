@@ -10,3 +10,7 @@ psutil>=5.9
 pyrekordbox>=0.4.4,<0.6   # master.db; carries the database key (no download, works offline)
 pywebview>=5.0         # native window: WebView2 on Windows, WKWebView on macOS (pulls in pyobjc there)
 mutagen>=1.47          # read tags inside audio files for the Track screen
+# librosa needs numba/llvmlite; their newest releases no longer ship Intel-Mac wheels (pip would try to
+# compile LLVM). Intel Macs stay on the last versions that did; everything else gets the latest.
+numba<0.63 ; sys_platform == "darwin" and platform_machine == "x86_64"
+llvmlite<0.46 ; sys_platform == "darwin" and platform_machine == "x86_64"

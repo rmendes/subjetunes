@@ -89,7 +89,13 @@ if ($reuse) {
     if ($LASTEXITCODE -ne 0) { throw "get-pip failed" }
 
     Write-Host "== Dependencies"
-    & $py -m pip install --no-warn-script-location -r (Join-Path $repo "requirements-app.txt")
+    # Embedded Python can't run pip's isolated builds (its ._pth file hides the temporary build env),
+    # so a package that ships only as source (pywebview's proxy_tools) fails to install on a clean
+    # machine. With setuptools in the runtime and build isolation off, it builds from the runtime itself.
+    # (It worked on a dev PC only because pip reused a wheel cached from the .venv.)
+    & $py -m pip install --no-warn-script-location setuptools wheel
+    if ($LASTEXITCODE -ne 0) { throw "setuptools install failed" }
+    & $py -m pip install --no-warn-script-location --no-build-isolation -r (Join-Path $repo "requirements-app.txt")
     if ($LASTEXITCODE -ne 0) { throw "pip install failed" }
     if (-not $Lite) {
         & $py -m pip install --no-warn-script-location torch --index-url https://download.pytorch.org/whl/cpu
