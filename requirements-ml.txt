@@ -1,0 +1,6 @@
+# CLAP embeddings (mood, components, zero-shot + probe judges). CPU is fine on the i5-13600K.
+# Install torch FIRST from the CPU index (the RX 6950 XT has no official PyTorch GPU wheels on Windows):
+#   pip install torch --index-url https://download.pytorch.org/whl/cpu
+transformers>=4.40
+# optional:
+# muq                    # MuQ-MuLan music embeddings (CC-BY-NC weights)

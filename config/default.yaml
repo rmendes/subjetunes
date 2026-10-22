@@ -1,0 +1,92 @@
+# TAG defaults. Don't edit this file for personal tweaks: the UI writes your
+# changes to config/user.yaml, which overrides these values.
+
+audio:
+  sr: 22050                    # analysis sample rate
+  positions: [0.25, 0.5, 0.75] # excerpt centres, relative to track length
+  segment_s: 30                # excerpt length for DSP
+  judge_positions: [0.3, 0.55, 0.8]   # excerpt centres for the audio-LLM
+  bands_hz: [[20, 150], [150, 1000], [1000, 5000], [5000, 16000]]
+
+analysis:
+  workers: 12                  # i5-13600K has 20 threads; leave some for the UI and rekordbox
+
+scoring:
+  normalisation: job           # job = rank within the selected playlists, global = all cached tracks
+  band_active_onsets_per_s: 2.0
+  looseness_full_scale: 0.08   # micro-timing spread (16th-note units) that counts as fully loose; ~10 ms at 120 BPM
+  energy_weights:
+    bpm: 0.25
+    onset_rate: 0.20
+    band_breadth: 0.20
+    rms_db: 0.15
+    spectral_flux_mean: 0.10
+    spectral_flatness_mean: 0.10
+
+clap:
+  enabled: true
+  model_id: laion/larger_clap_music
+  segment_s: 10
+  threads: 12
+  mood_axes:                   # column = mood_<name>; value = P(first prompt) vs the second. Name = the first pole.
+    agitated: ["agitated, tense, frantic music", "calm, relaxed, laid-back music"]
+    angry:    ["angry, aggressive music", "peaceful, gentle music"]
+    analog:   ["warm analog recording, vintage hardware", "cold digital production, crisp synthetic sound"]
+    bright:   ["bright, uplifting music", "dark, moody music"]
+  components:                  # column = comp_<name>
+    vocals:    ["music with singing or vocals", "instrumental music without vocals"]
+    piano:     ["music featuring piano", "music without piano"]
+    acid:      ["squelchy acid synth bassline", "music without acid synth"]
+    breakbeat: ["breakbeat drums", "four-on-the-floor kick drum"]
+    strings:   ["music with a string section", "music without strings"]
+
+llm:
+  ollama_url: http://localhost:11434
+  model: qwen2.5-coder:14b-instruct-q5_K_M
+  batch_size: 5
+  num_ctx: 8192
+  fewshots: 8
+
+audio_llm:
+  port: 8080
+  default_model: qwen2.5-omni-7b
+  cascade_band: [0.35, 0.65]
+
+benchmark:
+  time_budget_hours: 8         # auto-pick only judges that finish the job within this budget
+  min_labels: 8
+
+# Bucket rules can use any column of the Review table:
+#   energy swing looseness brightness bpm swing_ratio microtiming_std onset_rate rms_db
+#   mood_<axis>  comp_<component>  crit_<criterion id>
+buckets:
+  - id: peak_time
+    name: Peak Time
+    description: High energy, driving, tight drums, good for the peak of a night.
+    rule: "energy >= 0.75 and looseness < 0.5"
+    use_llm: false
+  - id: warmup_groovy
+    name: Warm-up Groove
+    description: Mid energy, swung or loose drums, warm, inviting.
+    rule: "0.3 <= energy < 0.6 and (swing > 0.4 or looseness > 0.5)"
+    use_llm: false
+  - id: low_energy
+    name: Low Energy
+    description: Openers, closers, listening tracks.
+    rule: "energy < 0.3"
+    use_llm: false
+  - id: late_night_weird
+    name: Late Night Weird
+    description: Hypnotic, dark, strange textures, not necessarily high BPM. Subjective.
+    rule: ""
+    use_llm: true
+  - id: vocal_moments
+    name: Vocal Moments
+    description: Tracks where the vocal is a feature, not just a sample.
+    rule: "comp_vocals > 0.7"
+    use_llm: true              # rule pre-filters, LLM confirms
+
+criteria_judge: {}             # criterion id -> chosen judge id (written by the Benchmark page)
+
+ui:
+  last_xml: ""

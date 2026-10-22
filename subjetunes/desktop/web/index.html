@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Subjetunes</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="shell">
+    <nav class="rail" id="rail" aria-label="Sections"></nav>
+    <header class="top">
+      <nav class="crumbs" id="crumbs" aria-label="Where you are"></nav>
+      <button class="iconbtn" id="cmdTrigger" type="button" aria-label="Find" data-tip="Find a track, playlist or action  ·  Ctrl K" id="findTip">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4.2-4.2"/></svg>
+      </button>
+      <button class="chip" id="chip" type="button" data-a="go" data-v="write"></button>
+    </header>
+    <main class="main" id="main"></main>
+    <footer class="player" id="player" hidden>
+      <button class="play" id="play" type="button" aria-label="Play" data-tip="Space">
+        <svg viewBox="0 0 14 14" aria-hidden="true"><path id="playIcon" d="M3 1.5v11l9-5.5z" fill="currentColor"/></svg>
+      </button>
+      <div class="bands sm" data-bands data-tip="HI / MID / LOW"></div>
+      <div class="who" id="who"></div>
+      <div class="scrub"><span id="tcur">0:00</span><input type="range" id="seek" min="0" max="1000" value="0" aria-label="Position"><span id="tdur">0:00</span></div>
+      <audio id="audio" preload="none"></audio>
+    </footer>
+  </div>
+  <div class="palette" id="palette" hidden>
+    <div class="palette-panel" role="dialog" aria-label="Find">
+      <input class="palette-input" id="paletteInput" type="text" placeholder="Track, artist, playlist or action" autocomplete="off">
+      <ul class="palette-list" id="paletteList" role="listbox"></ul>
+    </div>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="tip" id="tip" role="tooltip"></div>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "subjetunes"
+version = "0.9.1"
+description = "rekordbox library tool: analysis, comment tags and bucket playlists, with you in the loop"
+requires-python = ">=3.10"
+
+[tool.setuptools]
+packages = ["subjetunes", "subjetunes.features", "subjetunes.judges", "subjetunes.tagging", "subjetunes.desktop", "subjetunes.desktop.sources"]
+
+[tool.setuptools.package-data]
+"subjetunes.desktop" = ["web/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = [".", "tests"]

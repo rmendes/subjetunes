@@ -1,0 +1,4 @@
+# requirements.txt : development (python -m pip install -r requirements.txt).
+# The app itself needs requirements-app.txt; CLAP needs requirements-ml.txt + torch (see README).
+-r requirements-app.txt
+pytest>=8

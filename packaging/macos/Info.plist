@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- packaging/macos/Info.plist : @VERSION@ and @BUNDLE_ID@ are filled in by build_macos.sh -->
+<plist version="1.0">
+<dict>
+  <key>CFBundleName</key><string>Subjetunes</string>
+  <key>CFBundleDisplayName</key><string>Subjetunes</string>
+  <key>CFBundleIdentifier</key><string>@BUNDLE_ID@</string>
+  <key>CFBundleExecutable</key><string>Subjetunes</string>
+  <key>CFBundleIconFile</key><string>Subjetunes</string>
+  <key>CFBundlePackageType</key><string>APPL</string>
+  <key>CFBundleShortVersionString</key><string>@VERSION@</string>
+  <key>CFBundleVersion</key><string>@VERSION@</string>
+  <key>LSMinimumSystemVersion</key><string>11.0</string>
+  <key>LSApplicationCategoryType</key><string>public.app-category.music</string>
+  <key>NSHighResolutionCapable</key><true/>
+  <key>NSSupportsAutomaticGraphicsSwitching</key><true/>
+  <!-- The app only talks to its own server on 127.0.0.1 -->
+  <key>NSAppTransportSecurity</key><dict><key>NSAllowsLocalNetworking</key><true/></dict>
+  <!-- macOS asks before an app reads these places; DJs often keep music on external drives -->
+  <key>NSRemovableVolumesUsageDescription</key><string>Subjetunes plays and analyses the music files in your rekordbox library, which can be on external drives.</string>
+  <key>NSNetworkVolumesUsageDescription</key><string>Subjetunes plays and analyses the music files in your rekordbox library, which can be on network drives.</string>
+  <key>NSDesktopFolderUsageDescription</key><string>Subjetunes plays and analyses the music files in your rekordbox library.</string>
+  <key>NSDocumentsFolderUsageDescription</key><string>Subjetunes plays and analyses the music files in your rekordbox library.</string>
+  <key>NSDownloadsFolderUsageDescription</key><string>Subjetunes plays and analyses the music files in your rekordbox library.</string>
+</dict>
+</plist>

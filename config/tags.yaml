@@ -1,0 +1,92 @@
+# config/tags.yaml : the tag vocabulary Subjetunes suggests for the Comments field.
+# Override any top-level key under `comment_tags:` in data/user.yaml (the app writes there when you
+# rename or add tags from the Tag screen).
+#
+# How it's built (distilled from Cyanite's taxonomy, That Pitch, Klangspot and AI Music Factory):
+#  * separate axes, not one pile of adjectives: mood, movement, character, sound, arc, context;
+#  * a small profile per track: one or two moods, an energy level, one movement, one or two contexts;
+#  * mood comes from valence (how positive) x arousal (how energetic the emotion is);
+#  * energy is a level AND an arc (does it build, swing, or hold?);
+#  * no contradictions in one track (see `conflicts`), specific words over vague ones;
+#  * tag what the audio does, not what it was meant to do: every tag carries its evidence.
+#
+# Variables: energy, swing, looseness, bpm, valence, arousal, mood_*, comp_*, crit_*, energy_spread,
+# energy_slope, camelot, rating, year, and "word" in clues. valence defaults to mood_bright and arousal
+# to energy (lifted a little by mood_agitated) when the engine doesn't provide them.
+# A tag is "uncertain" (shown, not written) if moving one input by `margin` would flip it.
+# rekordbox's "Comments contains" is a substring match, so no tag may start another (#warm / #warmup).
+
+comment_tags:
+  block: {open: "{st", close: "}", position: end, max_len: 255}
+  max_tags: 12
+  margin: 0.05
+  min_confidence: 0.6
+  write_uncertain: false
+
+  groups:                       # max = how many tags of that axis one track may carry
+    mood:      {max: 2, tip: "How it feels. The stronger one comes first."}
+    movement:  {max: 1, tip: "Rhythmic feel"}
+    character: {max: 2, tip: "Sonic personality"}
+    sound:     {max: 4, tip: "What you can actually hear"}
+    arc:       {max: 1, tip: "How the energy moves through the track"}
+    context:   {max: 2, tip: "Where it fits in a set"}
+
+  levels:
+    - source: energy
+      mode: quantile
+      cuts: [0.2, 0.4, 0.6, 0.8]
+      tags: ["#e1", "#e2", "#e3", "#e4", "#e5"]
+
+  rules:
+    # mood: valence x arousal quadrants, then the criteria you defined
+    - {tag: "#euphoric",    when: "valence >= 0.65 and arousal >= 0.7", group: mood}
+    - {tag: "#uplifting",   when: "valence >= 0.6 and 0.45 <= arousal < 0.7", group: mood}
+    - {tag: "#dreamy",      when: "valence >= 0.55 and arousal < 0.45", group: mood}
+    - {tag: "#melancholic", when: "valence < 0.35 and arousal < 0.5", group: mood}
+    - {tag: "#dark",        when: "valence < 0.3 and arousal >= 0.5", group: mood}
+    - {tag: "#tense",       when: "crit_dancefloor_tension >= 0.7", group: mood}
+    - {tag: "#aggressive",  when: "mood_angry >= 0.75 or (mood_agitated >= 0.8 and arousal >= 0.7)", group: mood}
+    - {tag: "#hypnotic",    when: "crit_hypnotic >= 0.7", group: mood}
+    # movement: one rhythmic feel
+    - {tag: "#broken",   when: "comp_breakbeat >= 0.7", group: movement}
+    - {tag: "#groovy",   when: "swing >= 0.5", group: movement}
+    - {tag: "#driving",  when: "looseness < 0.35 and energy >= 0.6", group: movement}
+    - {tag: "#rolling",  when: "0.35 <= looseness < 0.65 and energy >= 0.4", group: movement}
+    - {tag: "#floating", when: "energy < 0.25", group: movement}
+    # character: sonic personality
+    - {tag: "#analog",  when: "mood_analog >= 0.7", group: character}
+    - {tag: "#digital", when: "mood_analog <= 0.3", group: character}
+    - {tag: "#raw",     when: "looseness >= 0.7 and mood_analog >= 0.5", group: character}
+    - {tag: "#sparse",  when: "energy < 0.35 and comp_vocals < 0.3", group: character}
+    # sound: what's audibly there
+    - {tag: "#vocal",        when: "comp_vocals >= 0.7", group: sound}
+    - {tag: "#instrumental", when: "comp_vocals <= 0.15", group: sound}
+    - {tag: "#acid",         when: "comp_acid >= 0.7", group: sound}
+    - {tag: "#piano",        when: "comp_piano >= 0.7", group: sound}
+    - {tag: "#strings",      when: "comp_strings >= 0.7", group: sound}
+    # arc: needs energy_spread / energy_slope from the engine (excerpt energies); otherwise never fires
+    - {tag: "#slow-burn", when: "energy_slope >= 0.25", group: arc}
+    - {tag: "#dynamic",   when: "energy_spread >= 0.4", group: arc}
+    - {tag: "#steady",    when: "energy_spread < 0.15", group: arc}
+    # context: where it sits in a set
+    - {tag: "#peak",       when: "energy >= 0.8 and arousal >= 0.7", group: context}
+    - {tag: "#warmup",     when: "0.25 <= energy < 0.55 and valence >= 0.4", group: context}
+    - {tag: "#afterhours", when: "valence < 0.45 and crit_hypnotic >= 0.6", group: context}
+    - {tag: "#closing",    when: "valence >= 0.55 and 0.35 <= energy < 0.7 and (comp_vocals >= 0.6 or comp_strings >= 0.5 or comp_piano >= 0.6)", group: context}
+
+  conflicts:                    # never both on one track; the weaker evidence loses, your own pick always wins
+    - ["#euphoric", "#dark"]
+    - ["#euphoric", "#melancholic"]
+    - ["#uplifting", "#dark"]
+    - ["#dreamy", "#aggressive"]
+    - ["#analog", "#digital"]
+    - ["#vocal", "#instrumental"]
+    - ["#peak", "#warmup"]
+    - ["#floating", "#driving"]
+
+  manual: {}                    # {group: [tags]} you add by hand; never suggested automatically
+
+  choices:
+    - {source: crit_vocal_role, prefix: "#vox-", skip: [none]}
+
+  buckets: {enabled: true, prefix: "#b-", skip: []}

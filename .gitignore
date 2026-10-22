@@ -1,0 +1,10 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+data/
+config/user.yaml
+tools/llama.cpp/
+*.gguf
+*.egg-info/
+dist/

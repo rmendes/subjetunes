@@ -1,0 +1,12 @@
+# requirements-app.txt : what the portable builds install (Python 3.12; Windows x64, macOS arm64/x86_64).
+# The Streamlit UI is replaced by the desktop app, so streamlit is no longer needed.
+numpy>=1.26
+pandas>=2.1
+pyyaml>=6
+requests>=2.31
+librosa>=0.10          # audio decoding; ffmpeg in tools\ffmpeg is the fallback
+soundfile>=0.12
+psutil>=5.9
+pyrekordbox>=0.4.4,<0.6   # master.db; carries the database key (no download, works offline)
+pywebview>=5.0         # native window: WebView2 on Windows, WKWebView on macOS (pulls in pyobjc there)
+mutagen>=1.47          # read tags inside audio files for the Track screen
