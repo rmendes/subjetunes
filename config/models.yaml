@@ -1,0 +1,88 @@
+# Every model TAG knows about. The Models page and `python -m tag.cli info` filter this
+# list against config/hardware.yaml. Sizes are approximate (Q4_K_M + projector + 8K context).
+# For llama-server entries: `hf_repo` downloads on first start (cached by llama.cpp), or set
+# model_path / mmproj_path to local GGUF files.
+models:
+  # ---- embeddings (CPU) -------------------------------------------------------------
+  - id: clap-larger-music
+    kind: embedding
+    runtime: cpu
+    hf_repo: laion/larger_clap_music
+    ram_gb: 2
+    license: Apache-2.0 (check model card)
+    notes: Default. Music-trained CLAP.
+  - id: clap-htsat-unfused
+    kind: embedding
+    runtime: cpu
+    hf_repo: laion/clap-htsat-unfused
+    ram_gb: 1.5
+    notes: General-audio fallback.
+
+  # ---- audio-LLMs (listen) via llama.cpp Vulkan --------------------------------------
+  - id: qwen2.5-omni-7b
+    kind: audio_llm
+    runtime: llama_server_vulkan
+    hf_repo: ggml-org/Qwen2.5-Omni-7B-GGUF
+    vram_gb: 9
+    ram_gb: 2
+    sample_rate: 16000
+    max_clip_s: 25
+    version: q4_k_m
+    launch_args: ["-ngl", "99", "-c", "8192", "-fa", "on"]
+    notes: Default audio judge. Fully on GPU.
+  - id: qwen2.5-omni-3b
+    kind: audio_llm
+    runtime: llama_server_vulkan
+    hf_repo: ggml-org/Qwen2.5-Omni-3B-GGUF
+    vram_gb: 5
+    ram_gb: 2
+    sample_rate: 16000
+    max_clip_s: 25
+    version: q4_k_m
+    launch_args: ["-ngl", "99", "-c", "8192", "-fa", "on"]
+    notes: Fast cascade first stage.
+  - id: qwen3-omni-30b-a3b
+    kind: audio_llm
+    runtime: llama_server_vulkan
+    hf_repo: ggml-org/Qwen3-Omni-30B-A3B-Instruct-GGUF
+    vram_gb: 14
+    ram_gb: 2
+    ram_offload_gb: 8          # MoE experts kept in RAM via --n-cpu-moe
+    sample_rate: 16000
+    max_clip_s: 25
+    version: q4_k_m
+    launch_args: ["-ngl", "99", "--n-cpu-moe", "12", "-c", "8192", "-fa", "on"]
+    notes: Quality tier. Raise --n-cpu-moe until it loads without out-of-memory errors. Slower.
+  - id: gemma-4-e4b
+    kind: audio_llm
+    runtime: llama_server_vulkan
+    hf_repo: ggml-org/gemma-4-E4B-it-GGUF
+    vram_gb: 6
+    ram_gb: 2
+    sample_rate: 16000
+    max_clip_s: 25
+    version: q4_k_m
+    experimental: true
+    launch_args: ["-ngl", "99", "-c", "8192", "-fa", "on"]
+    notes: Experimental. Needs a BF16 mmproj; audio support is speech-oriented.
+
+  # ---- text LLMs (Ollama) -----------------------------------------------------------
+  - id: qwen2.5-coder:14b-instruct-q5_K_M
+    kind: text_llm
+    runtime: ollama
+    vram_gb: 12.5
+    notes: Already installed. Also your VS Code coding model -> don't run audio jobs while coding.
+  - id: qwen2.5-coder:7b
+    kind: text_llm
+    runtime: ollama
+    vram_gb: 6
+    notes: Lighter option during long jobs.
+
+  # ---- listed for reference: excluded automatically on this PC ------------------------
+  - id: music-flamingo
+    kind: audio_llm
+    runtime: cuda
+    hf_repo: nvidia/music-flamingo-hf
+    vram_gb: 16
+    license: NVIDIA non-commercial
+    notes: Best music understanding, but PyTorch + NVIDIA only. Revisit if a GGUF port appears.

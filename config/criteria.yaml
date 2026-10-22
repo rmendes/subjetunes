@@ -1,0 +1,37 @@
+# Subjective criteria. Edit here or in the Criteria page (which writes config/user.yaml).
+# type: scale (0..1) | binary | choice
+# anchors: concrete descriptions make small models far more consistent.
+# clap_prompts: [positive, negative] for the zero-shot CLAP judge (optional).
+# needs_audio: true -> must be judged by listening (audio-LLM or embeddings), not from captions.
+criteria:
+  - id: hypnotic
+    name: Hypnotic
+    type: scale
+    description: How much the track locks you into a repetitive, trance-like state.
+    anchors:
+      "0.0": Constantly changing, song-like, many breakdowns
+      "0.5": Repetitive groove with some development
+      "1.0": Minimal variation, loop-based, slowly evolving
+    clap_prompts: ["hypnotic repetitive minimal loop music", "song with verses, chorus and many changes"]
+    needs_audio: true
+    use_metadata: false
+    judges: auto
+  - id: vocal_role
+    name: Vocal role
+    type: choice
+    choices: [none, chopped_sample, spoken, sung_hook, full_song]
+    description: What the human voice does in the track.
+    needs_audio: true
+    use_metadata: false
+    judges: auto
+  - id: tension
+    name: Tension
+    type: scale
+    description: Does it build anticipation and pressure on a dancefloor, or release and relax?
+    anchors:
+      "0.0": Releasing, floaty, relaxed
+      "1.0": Coiled, pressure building, tense
+    clap_prompts: ["tense, building, suspenseful electronic music", "relaxed, floating, releasing music"]
+    needs_audio: false
+    use_metadata: false
+    judges: auto

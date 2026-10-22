@@ -1,0 +1,12 @@
+# Fallback hardware profile (from the HWiNFO report of the target PC).
+# Detection (psutil + `llama-server --list-devices`) overrides ram_gb / gpus when it works.
+ram_gb: 32
+cpu: Intel Core i5-13600K (6P+8E, 20 threads)
+gpus:
+  - device: Vulkan0
+    name: AMD Radeon RX 6950 XT
+    vram_gb: 16
+limits:
+  vram_gb_max: 15              # leave ~1 GB for Windows
+  ram_gb_max_for_models: 22    # leave room for TAG, rekordbox, the browser
+  allowed_runtimes: [cpu, ollama, llama_server_vulkan]   # no CUDA on this PC

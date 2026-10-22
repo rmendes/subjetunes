@@ -82,5 +82,5 @@ They are also labels you can use for the probe judges.
 
 `--scores` is a CSV or JSON with one row per track: `path` (or `location`), optional `buckets`
 (ids separated by `;`), and score columns (`energy`, `looseness`, `comp_vocals`, `crit_hypnotic`,
-`crit_hypnotic_conf`, ...). This is a stopgap until the Review page calls
-`subjetunes.tagging.suggest_batch()` directly.
+`crit_hypnotic_conf`, ...). The app doesn't need this file: it reads the engine's results directly (see
+DESKTOP.md). Use it for scripting, or call `subjetunes.tagging.suggest_batch()` from Python.

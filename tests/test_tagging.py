@@ -93,7 +93,7 @@ def test_suggest_one_axes_caps_and_uncertainty():
 
 def test_mood_capped_at_two_strongest_first():
     c = cfg()
-    v = {"energy": 0.95, "mood_bright": 0.05, "crit_hypnotic": 0.99, "crit_dancefloor_tension": 0.99, "mood_angry": 0.99}
+    v = {"energy": 0.95, "mood_bright": 0.05, "crit_hypnotic": 0.99, "crit_tension": 0.99, "mood_angry": 0.99}
     t = suggest_one("k", v, [], c, {"energy": [0.2, 0.4, 0.6, 0.8]})
     moods = [s.tag for s in t.suggestions if s.tag in ("#dark", "#hypnotic", "#tense", "#aggressive")]
     assert len(moods) == 2
@@ -223,3 +223,19 @@ def test_ledger_read_back(tmp_path):
     t = suggest_one("c:/music/b.mp3", {"energy": 0.9, "comp_acid": 0.95}, [], cfg(),
                     {"energy": [0.2, 0.4, 0.6, 0.8]}, lg2.overrides["c:/music/b.mp3"])
     assert "#hypnotic" in t.tags and "#acid" not in t.tags
+
+
+def test_tag_rules_only_use_criteria_that_exist():
+    """A crit_* name in tags.yaml that no criterion produces can never fire (crit_tension was once
+    written as crit_dancefloor_tension). Every crit_ variable must match an id in criteria.yaml."""
+    import re
+    import yaml
+    root = CFG_PATH.parent
+    ids = {c["id"] for c in yaml.safe_load((root / "criteria.yaml").read_text(encoding="utf-8"))["criteria"]}
+    c = cfg()
+    used = set()
+    for r in c.rules:
+        used |= {n[len("crit_"):] for n in compile_rule(r.when).names if n.startswith("crit_")}
+    used |= {ch.source[len("crit_"):] for ch in c.choices if ch.source.startswith("crit_")}
+    used = {u[:-len("_conf")] if u.endswith("_conf") else u for u in used}
+    assert used <= ids, f"tags.yaml uses criteria that config/criteria.yaml doesn't define: {sorted(used - ids)}"

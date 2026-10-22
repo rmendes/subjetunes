@@ -10,7 +10,8 @@
 #  * no contradictions in one track (see `conflicts`), specific words over vague ones;
 #  * tag what the audio does, not what it was meant to do: every tag carries its evidence.
 #
-# Variables: energy, swing, looseness, bpm, valence, arousal, mood_*, comp_*, crit_*, energy_spread,
+# Variables: energy, swing, looseness, bpm, valence, arousal, mood_*, comp_*, crit_<id> (ids from
+# config/criteria.yaml: crit_hypnotic, crit_vocal_role, crit_tension), energy_spread,
 # energy_slope, camelot, rating, year, and "word" in clues. valence defaults to mood_bright and arousal
 # to energy (lifted a little by mood_agitated) when the engine doesn't provide them.
 # A tag is "uncertain" (shown, not written) if moving one input by `margin` would flip it.
@@ -44,7 +45,7 @@ comment_tags:
     - {tag: "#dreamy",      when: "valence >= 0.55 and arousal < 0.45", group: mood}
     - {tag: "#melancholic", when: "valence < 0.35 and arousal < 0.5", group: mood}
     - {tag: "#dark",        when: "valence < 0.3 and arousal >= 0.5", group: mood}
-    - {tag: "#tense",       when: "crit_dancefloor_tension >= 0.7", group: mood}
+    - {tag: "#tense",       when: "crit_tension >= 0.7", group: mood}
     - {tag: "#aggressive",  when: "mood_angry >= 0.75 or (mood_agitated >= 0.8 and arousal >= 0.7)", group: mood}
     - {tag: "#hypnotic",    when: "crit_hypnotic >= 0.7", group: mood}
     # movement: one rhythmic feel

@@ -209,7 +209,7 @@ class DemoScores:  # noqa: D101
     available = True
     FIELDS = ("energy", "swing", "looseness", "mood_agitated", "mood_angry", "mood_analog", "mood_bright",
               "comp_vocals", "comp_piano", "comp_acid", "comp_breakbeat", "comp_strings",
-              "crit_hypnotic", "crit_dancefloor_tension")
+              "crit_hypnotic", "crit_tension")
 
     def scores(self, track_paths: list[str], ids: dict | None = None) -> dict[str, dict]:
         out = {}

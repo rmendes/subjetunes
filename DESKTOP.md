@@ -91,17 +91,19 @@ replace everything else.
 A rebuild never deletes `dist\Subjetunes\data\` or `config\user.yaml`. Only the runtime and the app
 code are replaced. The zip leaves `data\` out too.
 
-## Connecting the analysis engine
+## The analysis engine
 
-Analyse writes the batch to `data\batch\batch.xml` (AverageBpm and Tonality from rekordbox) and
-`data\batch\batch.json` (path, bpm, key, length and rekordbox's beat grid per track; its path is in
-the `SUBJETUNES_BATCH` environment variable), then runs
-`python -m subjetunes.cli analyze --xml data\batch\batch.xml --playlist "Subjetunes batch"`.
-The engine should take BPM and beat grid from there instead of measuring them.
+Analyse runs `python -m subjetunes.cli analyze` on the batch. The engine stores raw features (and CLAP
+embeddings) in `data/cache.sqlite`. The app scores them the way the engine does:
+- `scoring.compute_scores` gives energy, swing, looseness and brightness;
+- the CLAP prompt pairs in `config/default.yaml` give `mood_*` and `comp_*`;
+- stored judgments and your labels give `crit_<id>`, for the criteria in `config/criteria.yaml`.
 
-Scores come back through one function the engine still needs:
-`subjetunes.pipeline.score_rows(paths) -> list[dict]` (one flat dict per track: `path`, `energy`,
-`looseness`, `comp_*`, `mood_*`, `crit_*`, `crit_*_conf`). Until then: `data\scores.csv` or demo scores.
+Nothing is measured twice, and the scores refresh when a job finishes. A track that failed to decode shows
+a red dot with the reason on hover. `data/scores.csv` and demo scores are still there as fallbacks.
+
+`config/models.yaml` lists the judges and models the engine knows about. `config/hardware.yaml` is the
+fallback hardware profile for the development PC; detection replaces it where it works.
 
 ## Design system
 
